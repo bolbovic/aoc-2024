@@ -11,9 +11,9 @@ if (!day) {
 
 // Define paths
 const srcDir = path.join(__dirname, "../src/example");
-const testDir = path.join(__dirname, "../tests/example.test.ts");
+const testFile = path.join(__dirname, "../tests/example.test.ts");
 const daySrcDir = path.join(__dirname, `../src/day${day}`);
-const dayTestDir = path.join(__dirname, `../tests/day${day}.test.ts`);
+const dayTestFile = path.join(__dirname, `../tests/day${day}.test.ts`);
 
 // Copy the src/example folder to src/dayXX
 fs.copy(srcDir, daySrcDir, (err) => {
@@ -26,12 +26,37 @@ fs.copy(srcDir, daySrcDir, (err) => {
 });
 
 // Copy the test file from tests/example.test.ts to tests/dayXX.test.ts
-fs.copyFile(testDir, dayTestDir, (err) => {
+fs.copyFile(testFile, dayTestFile, (err) => {
   if (err) {
     console.error("Error copying test file:", err);
     process.exit(1);
   } else {
     console.log(`Copied tests/example.test.ts to tests/day${day}.test.ts`);
+
+    // Replace the import path in the new test file
+    const oldImportPath = `import { solve1, solve2 } from "../src/example";`;
+    const newImportPath = `import { solve1, solve2 } from "../src/day${day}";`;
+
+    // Read the test file, replace the import, and write it back
+    fs.readFile(dayTestFile, "utf-8", (err, data) => {
+      if (err) {
+        console.error("Error reading the test file:", err);
+        process.exit(1);
+      }
+
+      const updatedData = data.replace(oldImportPath, newImportPath);
+
+      fs.writeFile(dayTestFile, updatedData, "utf-8", (err) => {
+        if (err) {
+          console.error("Error writing the updated test file:", err);
+          process.exit(1);
+        } else {
+          console.log(
+            `Updated import in tests/day${day}.test.ts to point to src/day${day}`
+          );
+        }
+      });
+    });
   }
 });
 
