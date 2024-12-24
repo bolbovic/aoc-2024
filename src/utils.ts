@@ -1,5 +1,18 @@
 type Table = number[][];
 
+export function parseSingleDigitTable(input: string): string[][] {
+  // Handle empty or whitespace-only input
+  if (!input.trim()) return [];
+
+  return input
+    .trim()
+    .split("\n") // Split by newlines to get rows
+    .map(
+      (row) => row.trim().split("") // Split by spaces or tabs
+    )
+    .filter((row) => row.length > 0); // Remove empty rows if they exist
+}
+
 export function parseToTable(input: string): Table {
   // Handle empty or whitespace-only input
   if (!input.trim()) return [];
